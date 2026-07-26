@@ -243,6 +243,11 @@ h2{font-size:clamp(1.5rem,3vw,2rem);margin-bottom:28px}
 .xp .dates{font-family:var(--font-mono);font-size:.75rem;color:var(--ink-soft)}
 .xp ul{margin:14px 0 0 18px;color:var(--ink-soft);font-size:.95rem}
 .xp li{margin-bottom:7px;text-wrap:pretty}
+.xp-ladder{margin-top:14px;max-width:520px;border-left:2px dashed var(--line);padding-left:16px}
+.xp-rung{display:flex;justify-content:space-between;align-items:baseline;gap:18px;padding:4px 0}
+.xp-rung .r{font-family:var(--font-mono);font-size:.78rem;color:var(--ink)}
+.xp-rung .d{font-family:var(--font-mono);font-size:.72rem;color:var(--accent-2);white-space:nowrap}
+@media (max-width:560px){.xp-rung{flex-direction:column;gap:2px}}
 
 /* skills — interactive node web */
 .skillnet{
@@ -616,7 +621,11 @@ html[data-mode="night"] .rail-item.active .rail-label{text-shadow:0 0 8px rgba(1
       <div class="xp">
         <h3>IT Student Supervisor <span class="tag" style="vertical-align:middle;margin-left:8px;border-color:var(--accent);color:var(--accent)">Tech III</span></h3>
         <p class="org">IT Enterprise Endpoints · Texas Tech University</p>
-        <p class="dates">NOV 2024 — PRESENT</p>
+        <p class="dates">APR 2026 — PRESENT</p>
+        <div class="xp-ladder">
+          <div class="xp-rung"><span class="r">IT Student Technician (Tech II)</span><span class="d">JAN 2026 — MAR 2026</span></div>
+          <div class="xp-rung"><span class="r">IT Student Analyst (Tech I)</span><span class="d">NOV 2024 — DEC 2025</span></div>
+        </div>
         <ul>
           <li>Supervise and work alongside a team of 9 student technicians — leading appointments, walk-ups, and hands-on fixes.</li>
           <li>Serve as direct point of contact to the Residence Hall Support manager — reporting incidents and coordinating office needs.</li>
