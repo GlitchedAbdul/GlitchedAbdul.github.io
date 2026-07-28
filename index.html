@@ -1228,43 +1228,47 @@ sw.addEventListener('click',toggleMode);
   build();
 })();
 
-/* top picks: page sliders — one engine per shelf, smooth slide, endless loop */
+/* top picks: marquee shelves — constant leftward drift, pause on hover, arrows glide by page */
 (function(){
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const GAP=14;
+  const GAP=14, DRIFT=0.45;           // ~27px/sec crawl
   document.querySelectorAll('.picks-block').forEach(blockEl=>{
+    const car=blockEl.querySelector('.picks-carousel');
     const track=blockEl.querySelector('.picks-track');
     if(!track) return;
     const N=track.children.length;
     [...track.children].forEach(c=>track.appendChild(c.cloneNode(true)));
-    let idx=0, animating=false, safety=null;
+    track.style.transition='none';
+    let pos=0, target=null, hover=false;
     const step=()=>track.children[0].getBoundingClientRect().width+GAP;
     const per=()=>window.innerWidth>900?5:window.innerWidth>560?3:2;
-    function setX(i,anim){
-      track.style.transition=(anim&&!reduced)?'transform .6s cubic-bezier(.25,.1,.25,1)':'none';
-      track.style.transform='translateX('+(-i*step())+'px)';
+    const span=()=>N*step();
+    function norm(){
+      const s=span();
+      while(pos>=s){ pos-=s; if(target!==null) target-=s; }
+      while(pos<0){ pos+=s; if(target!==null) target+=s; }
     }
-    function done(){
-      if(idx>=N){ idx-=N; setX(idx,false); }
-      animating=false; clearTimeout(safety);
+    function frame(){
+      if(target!==null){
+        const d=target-pos;
+        if(reduced||Math.abs(d)<0.5){ pos=target; target=null; }
+        else pos+=d*0.11;
+      } else if(!hover&&!reduced){
+        pos+=DRIFT;
+      }
+      norm();
+      track.style.transform='translateX('+(-pos)+'px)';
+      requestAnimationFrame(frame);
     }
-    function arm(){ clearTimeout(safety); safety=setTimeout(done,750); }
-    function next(){
-      if(animating) return; animating=true;
-      idx+=per(); setX(idx,true); arm();
-      if(reduced) done();
-    }
-    function prev(){
-      if(animating) return; animating=true;
-      if(idx-per()<0){ idx+=N; setX(idx,false); void track.offsetWidth; }
-      idx-=per(); setX(idx,true); arm();
-      if(reduced) done();
-    }
-    track.addEventListener('transitionend',e=>{ if(e.propertyName==='transform') done(); });
+    function next(){ target=(target===null?pos:target)+per()*step(); }
+    function prev(){ target=(target===null?pos:target)-per()*step(); }
+    car.addEventListener('mouseenter',()=>hover=true);
+    car.addEventListener('mouseleave',()=>hover=false);
+    car.addEventListener('touchstart',()=>{hover=true;},{passive:true});
+    car.addEventListener('touchend',()=>{setTimeout(()=>hover=false,1600);},{passive:true});
     blockEl.querySelector('[data-dir="next"]').addEventListener('click',next);
     blockEl.querySelector('[data-dir="prev"]').addEventListener('click',prev);
-    window.addEventListener('resize',()=>setX(idx,false));
-    setX(0,false);
+    requestAnimationFrame(frame);
   });
 })();
 
